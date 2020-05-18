@@ -31,33 +31,21 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { ErrorTable, ErrorTableTemplate } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { httpStatusCodeFrom } from "@ganbarodigital/ts-lib-http-types/lib/v1";
-import { packageNameFrom } from "@ganbarodigital/ts-lib-packagename/lib/v1";
+import { expect } from "chai";
+import { describe } from "mocha";
 
-import { ExampleTemplate } from "./ExampleError";
-import { MiddlewareReturnedNoValueTemplate } from "./MiddlewareReturnedNoValue";
+import { MiddlewareReturnedNoValueError } from ".";
 
-const MODULE_NAME = packageNameFrom("@ganbarodigital/ts-lib-middleware/lib/v1");
+describe("MiddlewareReturnedNoValueErrorError", () => {
+    describe(".constructor()", () => {
+        it("creates a Javascript error", () => {
+            const unit = new MiddlewareReturnedNoValueError({
+                logsOnly: {
+                    middlewareName: "unit-test",
+                },
+            });
 
-type ModuleErrorTableIndex<T extends ErrorTable> = ErrorTableTemplate<T, string>;
-
-export class ModuleErrorTable implements ErrorTable {
-    [key: string]: ModuleErrorTableIndex<ModuleErrorTable>;
-
-    public "example": ExampleTemplate = {
-        packageName: MODULE_NAME,
-        errorName: "example",
-        status: httpStatusCodeFrom(500),
-        detail: "this is an example error from the ts-lib-template",
-    };
-
-    public "middleware-returned-no-value": MiddlewareReturnedNoValueTemplate = {
-        packageName: MODULE_NAME,
-        errorName: "middleware-returned-no-value",
-        status: httpStatusCodeFrom(500),
-        detail: "a MiddlewareStack failed to return a value",
-    };
-}
-
-export const ERROR_TABLE = new ModuleErrorTable();
+            expect(unit).to.be.instanceOf(Error);
+        });
+    });
+});

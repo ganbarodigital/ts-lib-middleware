@@ -7,6 +7,17 @@ This TypeScript library provides an Express/Ware-style middleware that:
 * is safely typed, and
 * supports async / Promises
 
+- [Introduction](#introduction)
+- [Quick Start](#quick-start)
+- [API](#api)
+- [Errors](#errors)
+  - [MiddlewareReturnedNoValueError](#middlewarereturnednovalueerror)
+- [NPM Scripts](#npm-scripts)
+  - [npm run clean](#npm-run-clean)
+  - [npm run build](#npm-run-build)
+  - [npm run test](#npm-run-test)
+  - [npm run cover](#npm-run-cover)
+
 ## Quick Start
 
 ```
@@ -16,14 +27,37 @@ npm install @ganbarodigital/ts-lib-middleware
 
 ```typescript
 // add this import to your Typescript code
-import { Middleware } from "@ganbarodigital/ts-lib-middleware/lib/v1"
+import { MiddlewareStack } from "@ganbarodigital/ts-lib-middleware/lib/v1"
 ```
 
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
 
 ## API
 
-TBD.
+## Errors
+
+### MiddlewareReturnedNoValueError
+
+```typescript
+import {
+    AppError,
+    AppErrorParams,
+} from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+
+export interface MiddlewareReturnedNoValueExtraData extends ExtraLogsOnlyData {
+    logsOnly: {
+        middlewareName: string;
+    };
+}
+
+export class MiddlewareReturnedNoValueError extends AppError {
+    public constructor(params: MiddlewareReturnedNoValueExtraData & AppErrorParams);
+}
+```
+
+`MiddlewareReturnedNoValueError` is a `throw`able JavaScript `Error`. It is thrown when we've run out of `Middleware` to execute in a `MiddlewareStack`.
+
+The fix? Make sure that the last piece of `Middleware` returns a value.
 
 ## NPM Scripts
 

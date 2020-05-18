@@ -34,3 +34,4 @@
 
 export { ModuleErrorTable, ERROR_TABLE } from "./ModuleErrorTable";
 export { ExampleError } from "./ExampleError";
+export { MiddlewareReturnedNoValueError } from "./MiddlewareReturnedNoValue";
