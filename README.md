@@ -10,6 +10,8 @@ This TypeScript library provides an Express/Ware-style middleware that:
 - [Introduction](#introduction)
 - [Quick Start](#quick-start)
 - [API](#api)
+  - [Middleware](#middleware)
+  - [MiddlewareStack](#middlewarestack)
 - [Errors](#errors)
   - [MiddlewareReturnedNoValueError](#middlewarereturnednovalueerror)
 - [NPM Scripts](#npm-scripts)
@@ -33,6 +35,84 @@ import { MiddlewareStack } from "@ganbarodigital/ts-lib-middleware/lib/v1"
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
 
 ## API
+
+### Middleware
+
+```typescript
+import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+
+/**
+ * type-signature for an individual piece of Middleware
+ */
+export type Middleware<I, O> = (input: I, next: Middleware<I, O>, onError: OnError) => O;
+```
+
+`Middleware` is a _function signature_. Use this to define the type of function that your `MiddlewareStack` will accept.
+
+For example:
+
+```typescript
+export type PrefetchAction = Middleware<URL, void>;
+```
+
+### MiddlewareStack
+
+```typescript
+// how to import into your own code
+import {
+    Middleware,
+    MiddlewareStack,
+    MiddlewareReturnedNoValueError
+} from "@ganbarodigital/ts-lib-middleware/lib/v1;
+
+// types used for parameters, return types and errors
+import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import {
+    Middleware,
+    MiddlewareReturnedNoValueError
+} from "@ganbarodigital/ts-lib-middleware/lib/v1;
+
+/**
+ * a collection of Middleware to be executed
+ *
+ * - <I> is the input type that Middleware must accept
+ * - <O> is the return type that Middleware must provide
+ */
+export class MiddlewareStack<I, O> {
+    /**
+     * add one or more pieces of middleware to this MiddlewareStack
+     *
+     * Middleware is executed in the order that you add it to the stack
+     */
+    public constructor(name: string, ...fns: Array<Middleware<I, O>>);
+
+    /**
+     * Execute the middleware that's on the stack, and return the result.
+     * We execute the middleware in the order that it was added to this
+     * stack. (IE first item added is the first item we run).
+     *
+     * Each piece of middleware either:
+     *
+     * - returns a return value of its own, or
+     * - throws an error, or
+     * - passes the (probably modified) input on to the next piece of
+     *   middleware in the stack
+     */
+    public run(input: I, onError: OnError = THROW_THE_ERROR): O;
+
+    /**
+     * what is this MiddlewareStack called?
+     */
+    public getName(): string;
+
+    /**
+     * what are the contents of the stack?
+     */
+    public getStack(): Array<Middleware<I, O>>;
+}
+```
+
+`MiddlewareStack` is an immutable _value type_. It holds and executes a list of functions, known as _middleware_.
 
 ## Errors
 
