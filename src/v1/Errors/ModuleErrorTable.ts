@@ -35,7 +35,6 @@ import { ErrorTable, ErrorTableTemplate } from "@ganbarodigital/ts-lib-error-rep
 import { httpStatusCodeFrom } from "@ganbarodigital/ts-lib-http-types/lib/v1";
 import { packageNameFrom } from "@ganbarodigital/ts-lib-packagename/lib/v1";
 
-import { ExampleTemplate } from "./ExampleError";
 import { MiddlewareReturnedNoValueTemplate } from "./MiddlewareReturnedNoValue";
 
 const MODULE_NAME = packageNameFrom("@ganbarodigital/ts-lib-middleware/lib/v1");
@@ -44,13 +43,6 @@ type ModuleErrorTableIndex<T extends ErrorTable> = ErrorTableTemplate<T, string>
 
 export class ModuleErrorTable implements ErrorTable {
     [key: string]: ModuleErrorTableIndex<ModuleErrorTable>;
-
-    public "example": ExampleTemplate = {
-        packageName: MODULE_NAME,
-        errorName: "example",
-        status: httpStatusCodeFrom(500),
-        detail: "this is an example error from the ts-lib-template",
-    };
 
     public "middleware-returned-no-value": MiddlewareReturnedNoValueTemplate = {
         packageName: MODULE_NAME,

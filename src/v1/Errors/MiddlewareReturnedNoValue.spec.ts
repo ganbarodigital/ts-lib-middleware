@@ -34,7 +34,7 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 
-import { MiddlewareReturnedNoValueError } from ".";
+import { ERROR_TABLE, MiddlewareReturnedNoValueError } from ".";
 
 describe("MiddlewareReturnedNoValueErrorError", () => {
     describe(".constructor()", () => {
@@ -47,5 +47,15 @@ describe("MiddlewareReturnedNoValueErrorError", () => {
 
             expect(unit).to.be.instanceOf(Error);
         });
+    });
+
+    it("is registered in the ERROR_TABLE", () => {
+        const unit = new MiddlewareReturnedNoValueError({
+            logsOnly: {
+                middlewareName: "unit-test",
+            },
+        });
+
+        expect(ERROR_TABLE["middleware-returned-no-value"]).to.eql(unit.details.template);
     });
 });

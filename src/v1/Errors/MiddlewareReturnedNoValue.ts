@@ -40,12 +40,10 @@ import {
     StructuredProblemReportDataWithExtraData,
 } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-import { ERROR_TABLE, ModuleErrorTable } from "./ModuleErrorTable";
+import { ERROR_TABLE, ModuleErrorTable } from ".";
 
 /**
  * the ExtraData that must be provided for each MiddlewareReturnedNoValueError
- *
- * @see ExampleError
  */
 export interface MiddlewareReturnedNoValueExtraData extends ExtraLogsOnlyData {
     logsOnly: {
@@ -55,8 +53,6 @@ export interface MiddlewareReturnedNoValueExtraData extends ExtraLogsOnlyData {
 
 /**
  * defines the structure of the data that goes into our ErrorTable
- *
- * @see ErrorReportingErrorTable
  */
 export type MiddlewareReturnedNoValueTemplate = ErrorTableTemplate<
     ModuleErrorTable,

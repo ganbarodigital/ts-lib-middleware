@@ -32,6 +32,5 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export { ModuleErrorTable, ERROR_TABLE } from "./ModuleErrorTable";
-export { ExampleError } from "./ExampleError";
+export { ERROR_TABLE, ModuleErrorTable } from "./ModuleErrorTable";
 export { MiddlewareReturnedNoValueError } from "./MiddlewareReturnedNoValue";
