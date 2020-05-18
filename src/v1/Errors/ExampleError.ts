@@ -40,7 +40,7 @@ import {
     StructuredProblemReportDataWithExtraData,
 } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-import { ERROR_TABLE, PackageErrorTable } from "./PackageErrorTable";
+import { ERROR_TABLE, ModuleErrorTable } from "./ModuleErrorTable";
 
 /**
  * the ExtraData that must be provided for each ExampleError
@@ -59,7 +59,7 @@ export interface ExampleExtraData extends ExtraLogsOnlyData {
  * @see ErrorReportingErrorTable
  */
 export type ExampleTemplate = ErrorTableTemplate<
-    PackageErrorTable,
+    ModuleErrorTable,
     "example"
 >;
 
@@ -67,7 +67,7 @@ export type ExampleTemplate = ErrorTableTemplate<
  * defines the data that goes into our StructuredProblemReport
  */
 export type ExampleData = StructuredProblemReportDataWithExtraData<
-    PackageErrorTable,
+    ModuleErrorTable,
     "example",
     ExampleTemplate,
     ExampleExtraData
@@ -77,7 +77,7 @@ export type ExampleData = StructuredProblemReportDataWithExtraData<
  * a type alias for our StructuredProblemReport
  */
 export type ExampleSRP = StructuredProblemReport<
-    PackageErrorTable,
+    ModuleErrorTable,
     "example",
     ExampleTemplate,
     ExampleExtraData,
@@ -93,7 +93,7 @@ export type ExampleSRP = StructuredProblemReport<
  * of input than it was originally written to support
  */
 export class ExampleError extends AppError<
-    PackageErrorTable,
+    ModuleErrorTable,
     "example",
     ExampleTemplate,
     ExampleExtraData,

@@ -37,20 +37,19 @@ import { packageNameFrom } from "@ganbarodigital/ts-lib-packagename/lib/v1";
 
 import { ExampleTemplate } from "./ExampleError";
 
-// @TODO: CHANGE ME TO BE THE RIGHT PACKAGE
-const PACKAGE_NAME = packageNameFrom("@ganbarodigital/ts-lib-XXX");
+const MODULE_NAME = packageNameFrom("@ganbarodigital/ts-lib-middleware/lib/v1");
 
-type PackageErrorTableIndex<T extends ErrorTable> = ErrorTableTemplate<T, string>;
+type ModuleErrorTableIndex<T extends ErrorTable> = ErrorTableTemplate<T, string>;
 
-export class PackageErrorTable implements ErrorTable {
-    [key: string]: PackageErrorTableIndex<PackageErrorTable>;
+export class ModuleErrorTable implements ErrorTable {
+    [key: string]: ModuleErrorTableIndex<ModuleErrorTable>;
 
     public "example": ExampleTemplate = {
-        packageName: PACKAGE_NAME,
+        packageName: MODULE_NAME,
         errorName: "example",
         status: httpStatusCodeFrom(500),
         detail: "this is an example error from the ts-lib-template",
     };
 }
 
-export const ERROR_TABLE = new PackageErrorTable();
+export const ERROR_TABLE = new ModuleErrorTable();

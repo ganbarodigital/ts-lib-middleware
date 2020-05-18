@@ -32,5 +32,5 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export { PackageErrorTable, ERROR_TABLE } from "./PackageErrorTable";
+export { ModuleErrorTable, ERROR_TABLE } from "./ModuleErrorTable";
 export { ExampleError } from "./ExampleError";
