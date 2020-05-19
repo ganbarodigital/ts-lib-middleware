@@ -10,6 +10,7 @@ This TypeScript library provides an Express/Ware-style middleware that:
 - [Introduction](#introduction)
 - [Quick Start](#quick-start)
 - [API](#api)
+  - [AsyncMiddleware](#asyncmiddleware)
   - [Middleware](#middleware)
   - [MiddlewareStack](#middlewarestack)
 - [Errors](#errors)
@@ -35,6 +36,26 @@ import { MiddlewareStack } from "@ganbarodigital/ts-lib-middleware/lib/v1"
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
 
 ## API
+
+### AsyncMiddleware
+
+```typescript
+import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+
+/**
+ * type-signature for an individual piece of Middleware
+ */
+export type AsyncMiddleware<I, O>
+    = (input: I, next: AsyncMiddleware<I, O>, onError: OnError) => Promise<O>;
+```
+
+`AsyncMiddleware` is a _function signature_. Use this to define the type of function that your `AsyncMiddlewareStack` will accept.
+
+For example:
+
+```typescript
+export type PrefetchAction = AsyncMiddleware<URL, void>;
+```
 
 ### Middleware
 

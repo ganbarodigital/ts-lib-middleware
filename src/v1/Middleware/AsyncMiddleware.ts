@@ -32,6 +32,10 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./AsyncMiddleware";
-export * from "./Middleware";
-export * from "./MiddlewareStack";
+import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+
+/**
+ * type-signature for an individual piece of Middleware
+ */
+export type AsyncMiddleware<I, O>
+    = (input: I, next: AsyncMiddleware<I, O>, onError: OnError) => Promise<O>;
