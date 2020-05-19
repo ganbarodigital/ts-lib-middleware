@@ -9,6 +9,11 @@ This TypeScript library provides an Express/Ware-style middleware that:
 
 - [Introduction](#introduction)
 - [Quick Start](#quick-start)
+- [Concepts](#concepts)
+  - [What Is Middleware?](#what-is-middleware)
+  - [What Is The Point Of Middleware?](#what-is-the-point-of-middleware)
+  - [What Can Middleware Do?](#what-can-middleware-do)
+  - [How Is Middleware Different From Functional Programming?](#how-is-middleware-different-from-functional-programming)
 - [API](#api)
   - [AsyncMiddleware](#asyncmiddleware)
   - [AsyncMiddlewareStack](#asyncmiddlewarestack)
@@ -35,6 +40,66 @@ import { MiddlewareStack } from "@ganbarodigital/ts-lib-middleware/lib/v1"
 ```
 
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
+
+## Concepts
+
+### What Is Middleware?
+
+_Middleware_ is simply a list of functions that call each other in a chain:
+
+- the first function calls the second function
+- the second function calls the third function
+
+... and so on. This continues until either:
+
+- one of the functions returns a value, or
+- one of the functions throws an exception
+
+If none of the functions returns a value, the code falls off the end of the chain, and an exception is thrown ([`MiddlewareReturnedNoValueError`](#middlewarereturnednovalueerror) in our case).
+
+### What Is The Point Of Middleware?
+
+The first thing to note about middleware is that each of these functions is indepedent of each other. They don't have a hard-coded call to the next function in the chain. We decide what the next function is when we put the chain together.
+
+That means that middleware functions can be written and published independently, and that they can be reused in any combination to suit our needs.
+
+Another thing to note about middleware is that each function is free to modify the input value that's being passed along the chain. When we run a middleware chain, we pass an input parameter from our code into the first function in the chain. From that point, it's up to each function to decide whether or not to modify the input data before passing it on to the next function in the chain.
+
+The final thing to note about middleware is that each function is free to modify the return value that it gets from the next function in the chain. Not only can each function in the chain do some processing before calling the next function in the chain, it can also do some processing after it has received a return value from the next function.
+
+When we combine these properties, we can do an awful lot with middleware.
+
+### What Can Middleware Do?
+
+Each middleware function ultimately does one (or more!) of the following:
+
+* they validate input data (and reject invalid inputs)
+* they filter input data (allowing some parts of the input through, removing others)
+* they augment input data (they add additional parts to the input)
+* they transform input data (they convert data from one form to another)
+* they validate the return value (and reject invalid return values)
+* they filter the return value (allowing some parts of the return value through, removing others)
+* they augment the return value (they add additional parts to the return value)
+* they transform the return value (they convert data from one form to another)
+* they process the input data, and produce a return value
+
+As long as each middleware function is doing a sensible unit of work, middleware gives us a highly-reusable toolkit to work with. Think of them like Lego bricks: individual parts that you can assemble to create all sorts of things.
+
+In the JavaScript world, two great examples of middleware are Express.JS and MetalSmith.
+
+### How Is Middleware Different From Functional Programming?
+
+Functional programming has this concept called _composition_, where the output of one function is used as the input to the next function. It's such a fundamental part of functional programming that functional languages include compiler/interpreter support for building new functions using composition.
+
+With middleware, our functions aren't _composed_ in the functional sense:
+
+* we don't use the output of one function as the input to the next
+* there's no compiler/interpreter support for this, so we have to emulate the behaviour using a piece of controlling JavaScript / TypeScript that we call the MiddlewareStack
+
+There **are** some things that our middleware has in common with functional programming:
+
+* your middleware functions are more reusable if they only use the data that's passed in as an input parameter (ie a "pure" function in functional programming terms)
+* any app that uses middleware is more reliable if the middleware functions only accept and process immutable data structures
 
 ## API
 
