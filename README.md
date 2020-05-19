@@ -14,6 +14,8 @@ This TypeScript library provides an Express/Ware-style middleware that:
   - [What Is The Point Of Middleware?](#what-is-the-point-of-middleware)
   - [What Can Middleware Do?](#what-can-middleware-do)
   - [How Is Middleware Different From Functional Programming?](#how-is-middleware-different-from-functional-programming)
+- [Why Use This Middleware Module?](#why-use-this-middleware-module)
+  - [Vs Segment's Ware](#vs-segments-ware)
 - [API](#api)
   - [AsyncMiddleware](#asyncmiddleware)
   - [AsyncMiddlewareStack](#asyncmiddlewarestack)
@@ -156,6 +158,19 @@ There **are** some things that our middleware has in common with functional prog
 
 * your middleware functions are more reusable if they only use the data that's passed in as an input parameter (ie a "pure" function in functional programming terms)
 * any app that uses middleware is more reliable if the middleware functions only accept and process immutable data structures
+
+## Why Use This Middleware Module?
+
+### Vs Segment's Ware
+
+[Ware](https://github.com/segmentio/ware) from Segment is the middleware stack that powers [Metalsmith](https://metalsmith.io). It's available as a standalone package. It's an established and mature package.
+
+There's several important differences between Ware and our Middleware module:
+
+* Safe types! - It should be impossible to build a MiddlewareStack that has incompatible middleware functions in it.
+* Immutable MiddlewareStack! - The only way to build a MiddlewareStack is via the constructor.
+* Explicit choice of synchronous or asynchronous code! - if a synchronous middleware stack makes more sense for your code, we provide one, and you don't have the added complication of providing a `done()` callback if you're working fully-synchronously.
+* Our `MiddlewareStack.run()` statement returns whatever the Middleware returns, making it easier to incorporate into larger applications.
 
 ## API
 
