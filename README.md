@@ -11,6 +11,7 @@ This TypeScript library provides an Express/Ware-style middleware that:
 - [Quick Start](#quick-start)
 - [API](#api)
   - [AsyncMiddleware](#asyncmiddleware)
+  - [AsyncMiddlewareStack](#asyncmiddlewarestack)
   - [Middleware](#middleware)
   - [MiddlewareStack](#middlewarestack)
 - [Errors](#errors)
@@ -56,6 +57,64 @@ For example:
 ```typescript
 export type PrefetchAction = AsyncMiddleware<URL, void>;
 ```
+
+### AsyncMiddlewareStack
+
+```typescript
+// how to import into your own code
+import {
+    AsyncMiddlewareStack,
+} from "@ganbarodigital/ts-lib-middleware/lib/v1;
+
+// types used for parameters, return types and errors
+import {
+    AsyncMiddleware,
+    AsyncMiddlewareReturnedNoValueError
+} from "@ganbarodigital/ts-lib-middleware/lib/v1;
+import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+
+/**
+ * a collection of middleware to be executed asynchronously
+ *
+ * - <I> is the input type that the middleware must accept
+ * - <O> is the return type that the middleware must provide after the
+ *       Promise is resolved
+ */
+export class AsyncMiddlewareStack<I, O> {
+    /**
+     * add one or more pieces of middleware to this AsyncMiddlewareStack
+     *
+     * Middleware is executed in the order that you add it to the stack
+     */
+    public constructor(name: string, ...fns: Array<AsyncMiddleware<I, O>>);
+
+    /**
+     * Execute the middleware that's on the stack, and return the result.
+     * We execute the middleware in the order that it was added to this
+     * stack. (IE first item added is the first item we run).
+     *
+     * Each piece of middleware either:
+     *
+     * - returns a return value of its own, or
+     * - throws an error, or
+     * - passes the (probably modified) input on to the next piece of
+     *   middleware in the stack
+     */
+    public async run(input: I, onError: OnError = THROW_THE_ERROR): Promise<O>;
+
+    /**
+     * what is this AsyncMiddlewareStack called?
+     */
+    public getName(): string;
+
+    /**
+     * what are the contents of the internal stack?
+     */
+    public getStack(): Array<AsyncMiddleware<I, O>>;
+}
+```
+
+`AsyncMiddlewareStack` is an immutable _value type_. It holds and asynchronously executes a list of functions, known as _middleware_.
 
 ### Middleware
 

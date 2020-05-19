@@ -27,6 +27,7 @@ The following changes have been completed, and will be included in the next tagg
 
 * Middleware
   - Added `AsyncMiddleware` function signature
+  - Added `AsyncMiddlewareStack` value type
   - Added `Middleware` function signature
   - Added `MiddlewareStack` value type
 * Errors

@@ -33,5 +33,6 @@
 //
 
 export * from "./AsyncMiddleware";
+export * from "./AsyncMiddlewareStack";
 export * from "./Middleware";
 export * from "./MiddlewareStack";
