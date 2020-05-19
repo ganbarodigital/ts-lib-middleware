@@ -61,11 +61,67 @@ If none of the functions returns a value, the code falls off the end of the chai
 
 The first thing to note about middleware is that each of these functions is indepedent of each other. They don't have a hard-coded call to the next function in the chain. We decide what the next function is when we put the chain together.
 
+```typescript
+import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { Middleware } from "@ganbarodigital/ts-lib-middleware/lib/v1";
+
+/**
+ * an example middleware function
+ */
+function RejectNegatives(input: number, next: Middleware<number, number>, onError: OnError = THROW_THE_ERROR) {
+    if (input < 0 ) {
+        throw new Error("Negative numbers are not allowed");
+    }
+
+    // this function doesn't know what the next function is
+    // when we write it
+    //
+    // it is told what the next function is when we run it
+    return next(input, next, onError);
+}
+```
+
 That means that middleware functions can be written and published independently, and that they can be reused in any combination to suit our needs.
 
 Another thing to note about middleware is that each function is free to modify the input value that's being passed along the chain. When we run a middleware chain, we pass an input parameter from our code into the first function in the chain. From that point, it's up to each function to decide whether or not to modify the input data before passing it on to the next function in the chain.
 
+```typescript
+import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { Middleware } from "@ganbarodigital/ts-lib-middleware/lib/v1";
+
+/**
+ * an example middleware function
+ */
+function IntegerNumbersOnly(input: number, next: Middleware<number, number>, onError: OnError = THROW_THE_ERROR) {
+
+    // in this example, we (possibly!) change the value of input
+    // before calling the next function in the chain
+    input = Math.floor(input);
+
+    return next(input, next, onError);
+}
+```
+
 The final thing to note about middleware is that each function is free to modify the return value that it gets from the next function in the chain. Not only can each function in the chain do some processing before calling the next function in the chain, it can also do some processing after it has received a return value from the next function.
+
+```typescript
+import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { Middleware } from "@ganbarodigital/ts-lib-middleware/lib/v1";
+
+/**
+ * an example middleware function
+ */
+function IntegerNumbersOnly(input: number, next: Middleware<number, number>, onError: OnError = THROW_THE_ERROR) {
+
+    input = Math.floor(input);
+
+    // in this example, we make sure that any returned value is also an
+    // integer
+    return Math.floor(
+        next(input, next, onError)
+    );
+}
+```
 
 When we combine these properties, we can do an awful lot with middleware.
 
