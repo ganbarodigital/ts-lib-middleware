@@ -31,26 +31,11 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { ErrorTable, ErrorTableTemplate } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { httpStatusCodeFrom } from "@ganbarodigital/ts-lib-http-types/lib/v1";
-import { packageNameFrom } from "@ganbarodigital/ts-lib-packagename/lib/v1";
 
-import { ExampleTemplate } from "./ExampleError";
+import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-// @TODO: CHANGE ME TO BE THE RIGHT PACKAGE
-const PACKAGE_NAME = packageNameFrom("@ganbarodigital/ts-lib-XXX");
-
-type PackageErrorTableIndex<T extends ErrorTable> = ErrorTableTemplate<T, string>;
-
-export class PackageErrorTable implements ErrorTable {
-    [key: string]: PackageErrorTableIndex<PackageErrorTable>;
-
-    public "example": ExampleTemplate = {
-        packageName: PACKAGE_NAME,
-        errorName: "example",
-        status: httpStatusCodeFrom(500),
-        detail: "this is an example error from the ts-lib-template",
-    };
-}
-
-export const ERROR_TABLE = new PackageErrorTable();
+/**
+ * type-signature for an individual piece of Middleware
+ */
+export type AsyncMiddleware<I, O>
+    = (input: I, next: AsyncMiddleware<I, O>, onError: OnError) => Promise<O>;

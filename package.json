@@ -1,6 +1,6 @@
 {
   "name": "@ganbarodigital/ts-lib-middleware",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Safely-typed middleware stack",
   "repository": "github:ganbarodigital/ts-lib-middleware",
   "main": "lib/index.js",
@@ -27,7 +27,7 @@
   "dependencies": {
     "@ganbarodigital/ts-lib-error-reporting": "^0.3.0",
     "@ganbarodigital/ts-lib-http-types": "^0.3.0",
-    "@ganbarodigital/ts-lib-packagename": "^0.3.0"
+    "@ganbarodigital/ts-lib-packagename": "^0.3.1"
   },
   "devDependencies": {
     "@types/chai": "^4.2.8",

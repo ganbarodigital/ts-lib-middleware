@@ -40,69 +40,61 @@ import {
     StructuredProblemReportDataWithExtraData,
 } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
-import { ERROR_TABLE, PackageErrorTable } from "./PackageErrorTable";
+import { ERROR_TABLE, ModuleErrorTable } from ".";
 
 /**
- * the ExtraData that must be provided for each ExampleError
- *
- * @see ExampleError
+ * the ExtraData that must be provided for each MiddlewareReturnedNoValueError
  */
-export interface ExampleExtraData extends ExtraLogsOnlyData {
+export interface MiddlewareReturnedNoValueExtraData extends ExtraLogsOnlyData {
     logsOnly: {
-        reason: string;
+        middlewareName: string;
     };
 }
 
 /**
  * defines the structure of the data that goes into our ErrorTable
- *
- * @see ErrorReportingErrorTable
  */
-export type ExampleTemplate = ErrorTableTemplate<
-    PackageErrorTable,
-    "example"
+export type MiddlewareReturnedNoValueTemplate = ErrorTableTemplate<
+    ModuleErrorTable,
+    "middleware-returned-no-value"
 >;
 
 /**
  * defines the data that goes into our StructuredProblemReport
  */
-export type ExampleData = StructuredProblemReportDataWithExtraData<
-    PackageErrorTable,
-    "example",
-    ExampleTemplate,
-    ExampleExtraData
+export type MiddlewareReturnedNoValueData = StructuredProblemReportDataWithExtraData<
+    ModuleErrorTable,
+    "middleware-returned-no-value",
+    MiddlewareReturnedNoValueTemplate,
+    MiddlewareReturnedNoValueExtraData
 >;
 
 /**
  * a type alias for our StructuredProblemReport
  */
-export type ExampleSRP = StructuredProblemReport<
-    PackageErrorTable,
-    "example",
-    ExampleTemplate,
-    ExampleExtraData,
-    ExampleData
+export type MiddlewareReturnedNoValueSRP = StructuredProblemReport<
+    ModuleErrorTable,
+    "middleware-returned-no-value",
+    MiddlewareReturnedNoValueTemplate,
+    MiddlewareReturnedNoValueExtraData,
+    MiddlewareReturnedNoValueData
 >;
 
 /**
- * throwable Javascript Error, for when code that should never execute
- * has, in fact, executed
- *
- * commonly used in the `default:` clause of a `switch` statement, to
- * catch problems when the `switch` statement is handling a wider range
- * of input than it was originally written to support
+ * throwable Javascript Error, for when we fall off the end of any given
+ * MiddlewareStack
  */
-export class ExampleError extends AppError<
-    PackageErrorTable,
-    "example",
-    ExampleTemplate,
-    ExampleExtraData,
-    ExampleData,
-    ExampleSRP
+export class MiddlewareReturnedNoValueError extends AppError<
+    ModuleErrorTable,
+    "middleware-returned-no-value",
+    MiddlewareReturnedNoValueTemplate,
+    MiddlewareReturnedNoValueExtraData,
+    MiddlewareReturnedNoValueData,
+    MiddlewareReturnedNoValueSRP
 > {
-    public constructor(params: ExampleExtraData & AppErrorParams) {
-        const errorDetails: ExampleData = {
-            template: ERROR_TABLE.example,
+    public constructor(params: MiddlewareReturnedNoValueExtraData & AppErrorParams) {
+        const errorDetails: MiddlewareReturnedNoValueData = {
+            template: ERROR_TABLE["middleware-returned-no-value"],
             errorId: params.errorId,
             extra: {
                 logsOnly: params.logsOnly,

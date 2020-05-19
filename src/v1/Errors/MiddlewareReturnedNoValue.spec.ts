@@ -34,18 +34,28 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 
-import { ExampleError } from "./ExampleError";
+import { ERROR_TABLE, MiddlewareReturnedNoValueError } from ".";
 
-describe("ExampleErrorError", () => {
+describe("MiddlewareReturnedNoValueErrorError", () => {
     describe(".constructor()", () => {
         it("creates a Javascript error", () => {
-            const unit = new ExampleError({
+            const unit = new MiddlewareReturnedNoValueError({
                 logsOnly: {
-                    reason: "something went wrong",
+                    middlewareName: "unit-test",
                 },
             });
 
             expect(unit).to.be.instanceOf(Error);
         });
+    });
+
+    it("is registered in the ERROR_TABLE", () => {
+        const unit = new MiddlewareReturnedNoValueError({
+            logsOnly: {
+                middlewareName: "unit-test",
+            },
+        });
+
+        expect(ERROR_TABLE["middleware-returned-no-value"]).to.eql(unit.details.template);
     });
 });

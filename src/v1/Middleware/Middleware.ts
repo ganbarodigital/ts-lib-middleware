@@ -32,5 +32,9 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export { ERROR_TABLE, ModuleErrorTable } from "./ModuleErrorTable";
-export { MiddlewareReturnedNoValueError } from "./MiddlewareReturnedNoValue";
+import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+
+/**
+ * type-signature for an individual piece of Middleware
+ */
+export type Middleware<I, O> = (input: I, next: Middleware<I, O>, onError: OnError) => O;

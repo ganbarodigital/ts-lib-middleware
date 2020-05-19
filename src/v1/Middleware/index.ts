@@ -32,5 +32,7 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export { ERROR_TABLE, ModuleErrorTable } from "./ModuleErrorTable";
-export { MiddlewareReturnedNoValueError } from "./MiddlewareReturnedNoValue";
+export * from "./AsyncMiddleware";
+export * from "./AsyncMiddlewareStack";
+export * from "./Middleware";
+export * from "./MiddlewareStack";
