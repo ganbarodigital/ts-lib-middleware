@@ -57,5 +57,5 @@ import { MiddlewareOptions } from "./MiddlewareOptions";
 export type AsyncMiddleware<I, O> = (
     input: I,
     next: AsyncMiddleware<I, O>,
-    options?: MiddlewareOptions,
+    options: MiddlewareOptions,
 ) => Promise<O>;

@@ -35,7 +35,6 @@ import { THROW_THE_ERROR } from "@safelytyped/core-types";
 
 import { MiddlewareReturnedNoValueError } from "../Errors";
 import { AsyncMiddleware } from "./AsyncMiddleware";
-import { DEFAULT_MIDDLEWARE_OPTIONS } from "./defaults/DEFAULT_MIDDLEWARE_OPTIONS";
 import { MiddlewareOptions } from "./MiddlewareOptions";
 
 /**
@@ -86,7 +85,7 @@ export class AsyncMiddlewareStack<I, O> {
         const final = (
             input: I,
             next: AsyncMiddleware<I, O>,
-            options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+            options: MiddlewareOptions,
         ) => {
             throw options.onError(new MiddlewareReturnedNoValueError({
                 logsOnly: {
@@ -130,7 +129,7 @@ export class AsyncMiddlewareStack<I, O> {
             input: I,
             // tslint:disable-next-line: no-shadowed-variable
             next: AsyncMiddleware<I, O>,
-            options,
+            options: MiddlewareOptions
         ) => {
             const fn = this.fns[i++];
             return fn(input, next, options);

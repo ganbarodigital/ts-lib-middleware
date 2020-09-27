@@ -56,5 +56,5 @@ import { MiddlewareOptions } from "./MiddlewareOptions";
 export type Middleware<I, O> = (
     input: I,
     next: Middleware<I, O>,
-    options?: MiddlewareOptions
+    options: MiddlewareOptions
 ) => O;

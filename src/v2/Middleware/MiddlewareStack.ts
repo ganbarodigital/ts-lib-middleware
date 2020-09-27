@@ -31,12 +31,11 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { THROW_THE_ERROR } from "@safelytyped/core-types";
 
 import { Middleware } from ".";
 import { MiddlewareReturnedNoValueError } from "../Errors";
 import { MiddlewareOptions } from "./MiddlewareOptions";
-import { DEFAULT_MIDDLEWARE_OPTIONS } from "./defaults/DEFAULT_MIDDLEWARE_OPTIONS";
-import { THROW_THE_ERROR } from "@safelytyped/core-types";
 
 /**
  * `MiddlewareStack` is a collection of middleware to be executed
@@ -84,7 +83,7 @@ export class MiddlewareStack<I, O> {
         const final = (
             input: I,
             next: Middleware<I, O>,
-            options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+            options: MiddlewareOptions,
         ) => {
             throw options.onError(new MiddlewareReturnedNoValueError({
                 logsOnly: {
@@ -128,7 +127,7 @@ export class MiddlewareStack<I, O> {
             input: I,
             // tslint:disable-next-line: no-shadowed-variable
             next: Middleware<I, O>,
-            options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+            options: MiddlewareOptions
         ) => {
             const fn = this.fns[i++];
             return fn(input, next, options);
