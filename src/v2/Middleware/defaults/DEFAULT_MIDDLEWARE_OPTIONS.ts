@@ -31,31 +31,14 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { expect } from "chai";
-import { describe } from "mocha";
 
-import { ERROR_TABLE, MiddlewareReturnedNoValueError } from ".";
+import { MiddlewareOptions } from "../MiddlewareOptions";
+import { THROW_THE_ERROR } from "@safelytyped/core-types";
 
-describe("MiddlewareReturnedNoValueErrorError", () => {
-    describe(".constructor()", () => {
-        it("creates a Javascript error", () => {
-            const unit = new MiddlewareReturnedNoValueError({
-                logsOnly: {
-                    middlewareName: "unit-test",
-                },
-            });
-
-            expect(unit).to.be.instanceOf(Error);
-        });
-    });
-
-    it("is registered in the ERROR_TABLE", () => {
-        const unit = new MiddlewareReturnedNoValueError({
-            logsOnly: {
-                middlewareName: "unit-test",
-            },
-        });
-
-        expect(ERROR_TABLE["middleware-returned-no-value"]).to.eql(unit.details.template);
-    });
-});
+/**
+ * `DEFAULT_MIDDLEWARE_OPTIONS` are the default user-supplied optional
+ * parameters to use with the Middleware functions.
+ */
+export const DEFAULT_MIDDLEWARE_OPTIONS: MiddlewareOptions = {
+    onError: THROW_THE_ERROR
+};

@@ -31,8 +31,14 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { ExtraLogsOnlyData } from "@safelytyped/core-types";
 
-export * from "./AsyncMiddleware";
-export * from "./AsyncMiddlewareStack";
-export * from "./Middleware";
-export * from "./MiddlewareStack";
+/**
+ * `MiddlewareReturnedNoValueData` is the input that
+ * {@link MiddlewareReturnedNoValueError} requires.
+ */
+export interface MiddlewareReturnedNoValueData extends ExtraLogsOnlyData {
+    logsOnly: {
+        middlewareName: string;
+    };
+}

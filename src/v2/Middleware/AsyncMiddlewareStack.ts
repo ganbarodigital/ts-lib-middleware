@@ -31,37 +31,51 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import { THROW_THE_ERROR } from "@safelytyped/core-types";
 
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { Middleware } from ".";
 import { MiddlewareReturnedNoValueError } from "../Errors";
+import { AsyncMiddleware } from "./AsyncMiddleware";
+import { DEFAULT_MIDDLEWARE_OPTIONS } from "./defaults/DEFAULT_MIDDLEWARE_OPTIONS";
+import { MiddlewareOptions } from "./MiddlewareOptions";
 
 /**
- * a collection of Middleware to be executed
+ * `AsyncMiddlewareStack` is a collection of middleware to be
+ * executed asynchronously.
  *
- * - <I> is the input type that Middleware must accept
- * - <O> is the return type that Middleware must provide
+ * @template I
+ * the input type that the middleware must accept
+ * @template O
+ * the return type that the middleware must provide after the Promise
+ * is resolved
  */
-export class MiddlewareStack<I, O> {
+export class AsyncMiddlewareStack<I, O> {
     /**
-     * the list of middleware that we will execute
+     * `fns` is the list of functions that we will execute
      */
-    private fns: Array<Middleware<I, O>> = [];
+    private fns: AsyncMiddleware<I, O>[] = [];
 
     /**
-     * a human-readable name for this MiddlewareStack
+     * `name` is a human-readable name for this AsyncMiddlewareStack
      *
-     * we include this in error reports, so that developers can easily
-     * see which MiddlewareStack has failed
+     * We include this in error reports, so that developers can easily
+     * see which AsyncMiddlewareStack has failed.
      */
     private name: string;
 
     /**
-     * add one or more pieces of middleware to this MiddlewareStack
+     * `constructor()` builds a new AsyncMiddlewareStack.
      *
-     * Middleware is executed in the order that you add it to the stack
+     * Use it to add one or more pieces of middleware to this
+     * AsyncMiddlewareStack. The middleware is executed in the order
+     * that you add it to the stack.
+     *
+     * @param name
+     * The human-readable name of this AsyncMiddlewareStack. We use this
+     * in errors thrown by the AsyncMiddlewareStack class.
+     * @param fns
+     * The list of middleware to put in the AsyncMiddlewareStack.
      */
-    public constructor(name: string, ...fns: Array<Middleware<I, O>>) {
+    public constructor(name: string, ...fns: AsyncMiddleware<I, O>[]) {
         // we need this for useful error reporting!
         this.name = name;
 
@@ -69,8 +83,12 @@ export class MiddlewareStack<I, O> {
         this.fns = fns;
 
         // make sure we cannot go off the end of the stack
-        const final = (input: I, next: Middleware<I, O>, onError: OnError) => {
-            throw onError(new MiddlewareReturnedNoValueError({
+        const final = (
+            input: I,
+            next: AsyncMiddleware<I, O>,
+            options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+        ) => {
+            throw options.onError(new MiddlewareReturnedNoValueError({
                 logsOnly: {
                     middlewareName: this.name,
                 },
@@ -80,7 +98,9 @@ export class MiddlewareStack<I, O> {
     }
 
     /**
-     * Execute the middleware that's on the stack, and return the result.
+     * `run()` executes the middleware that's on the stack, and returns
+     * the result.
+     *
      * We execute the middleware in the order that it was added to this
      * stack. (IE first item added is the first item we run).
      *
@@ -90,31 +110,47 @@ export class MiddlewareStack<I, O> {
      * - throws an error, or
      * - passes the (probably modified) input on to the next piece of
      *   middleware in the stack
+     *
+     * @param input
+     * The value to pass into the first function on your MiddlewareStack.
+     * @param options.onError
+     * We will call this if something goes wrong.
      */
-    public run(input: I, onError: OnError = THROW_THE_ERROR): O {
+    public async run(
+        input: I,
+        {
+            onError = THROW_THE_ERROR,
+        }: Partial<MiddlewareOptions> = {},
+    ): Promise<O> {
         // keep track of where we are in the stack
         let i = 0;
 
-        // tslint:disable-next-line: no-shadowed-variable
-        const next = (input: I, next: Middleware<I, O>, onError: OnError) => {
+        const next: AsyncMiddleware<I,O> = (
+            // tslint:disable-next-line: no-shadowed-variable
+            input: I,
+            // tslint:disable-next-line: no-shadowed-variable
+            next: AsyncMiddleware<I, O>,
+            options,
+        ) => {
             const fn = this.fns[i++];
-            return fn(input, next, onError);
+            return fn(input, next, options);
         };
 
-        return next(input, next, onError);
+        return next(input, next, {onError});
     }
 
     /**
-     * what is this MiddlewareStack called?
+     * `getName()` returns the human-readable name of this
+     * AsyncMiddlewareStack.
      */
     public getName(): string {
         return this.name;
     }
 
     /**
-     * what are the contents of the stack?
+     * `getStack()` returns the list of middleware items on the stack.
      */
-    public getStack(): Array<Middleware<I, O>> {
+    public getStack(): AsyncMiddleware<I, O>[] {
         return this.fns;
     }
 }

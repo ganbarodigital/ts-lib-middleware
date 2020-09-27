@@ -31,6 +31,33 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
+import {
+    AppError,
+    AppErrorData,
+    makeHttpStatusCode,
+    makeStructuredProblemReport,
+} from "@safelytyped/core-types";
 
-export { ERROR_TABLE, ModuleErrorTable } from "./ModuleErrorTable";
-export { MiddlewareReturnedNoValueError } from "./MiddlewareReturnedNoValue";
+import { MODULE_NAME } from "../defaults/MODULE_NAME";
+import { MiddlewareReturnedNoValueData } from "./MiddlewareReturnedNoValueData";
+
+/**
+ * `MiddlewareReturnedNoValueError` is a throwable Javascript Error.
+ *
+ * It is thrown whenever we fall off the end of a middleware stack.
+ */
+export class MiddlewareReturnedNoValueError extends AppError<MiddlewareReturnedNoValueData> {
+    public constructor(params: MiddlewareReturnedNoValueData & AppErrorData) {
+        const spr = makeStructuredProblemReport<MiddlewareReturnedNoValueData>({
+            definedBy: MODULE_NAME,
+            description: "a MiddlewareStack failed to return a value",
+            errorId: params.errorId,
+            extra: {
+                logsOnly: params.logsOnly,
+            },
+            status: makeHttpStatusCode(500),
+        });
+
+        super(spr);
+    }
+}

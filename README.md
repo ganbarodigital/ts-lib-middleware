@@ -38,7 +38,7 @@ npm install @ganbarodigital/ts-lib-middleware
 
 ```typescript
 // add this import to your Typescript code
-import { MiddlewareStack } from "@ganbarodigital/ts-lib-middleware/lib/v1"
+import { MiddlewareStack } from "@ganbarodigital/ts-lib-middleware/lib/v2"
 ```
 
 __VS Code users:__ once you've added a single import anywhere in your project, you'll then be able to auto-import anything else that this library exports.
@@ -64,13 +64,20 @@ If none of the functions returns a value, the code falls off the end of the chai
 The first thing to note about middleware is that each of these functions is indepedent of each other. They don't have a hard-coded call to the next function in the chain. We decide what the next function is when we put the chain together.
 
 ```typescript
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { Middleware } from "@ganbarodigital/ts-lib-middleware/lib/v1";
+import { OnError, THROW_THE_ERROR } from "@safelytyped/core-types";
+import {
+    DEFAULT_MIDDLEWARE_OPTIONS,
+    Middleware
+} from "@ganbarodigital/ts-lib-middleware/lib/v2";
 
 /**
  * an example middleware function
  */
-function RejectNegatives(input: number, next: Middleware<number, number>, onError: OnError = THROW_THE_ERROR) {
+function RejectNegatives(
+    input: number,
+    next: Middleware<number, number>,
+    options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+) {
     if (input < 0 ) {
         throw new Error("Negative numbers are not allowed");
     }
@@ -83,19 +90,25 @@ function RejectNegatives(input: number, next: Middleware<number, number>, onErro
 }
 ```
 
-That means that middleware functions can be written and published independently, and that they can be reused in any combination to suit our needs.
+Middleware functions can be written and published independently. They can be reused in any combination to suit our needs.
 
 Another thing to note about middleware is that each function is free to modify the input value that's being passed along the chain. When we run a middleware chain, we pass an input parameter from our code into the first function in the chain. From that point, it's up to each function to decide whether or not to modify the input data before passing it on to the next function in the chain.
 
 ```typescript
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { Middleware } from "@ganbarodigital/ts-lib-middleware/lib/v1";
+import { OnError, THROW_THE_ERROR } from "@safelytyped/core-types";
+import {
+    DEFAULT_MIDDLEWARE_OPTIONS,
+    Middleware
+} from "@ganbarodigital/ts-lib-middleware/lib/v2";
 
 /**
  * an example middleware function
  */
-function IntegerNumbersOnly(input: number, next: Middleware<number, number>, onError: OnError = THROW_THE_ERROR) {
-
+function IntegerNumbersOnly(
+    input: number,
+    next: Middleware<number, number>,
+    options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+) {
     // in this example, we (possibly!) change the value of input
     // before calling the next function in the chain
     input = Math.floor(input);
@@ -107,14 +120,20 @@ function IntegerNumbersOnly(input: number, next: Middleware<number, number>, onE
 The final thing to note about middleware is that each function is free to modify the return value that it gets from the next function in the chain. Not only can each function in the chain do some processing before calling the next function in the chain, it can also do some processing after it has received a return value from the next function.
 
 ```typescript
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { Middleware } from "@ganbarodigital/ts-lib-middleware/lib/v1";
+import { OnError, THROW_THE_ERROR } from "@safelytyped/core-types";
+import {
+    DEFAULT_MIDDLEWARE_OPTIONS,
+    Middleware
+} from "@ganbarodigital/ts-lib-middleware/lib/v2";
 
 /**
  * an example middleware function
  */
-function IntegerNumbersOnly(input: number, next: Middleware<number, number>, onError: OnError = THROW_THE_ERROR) {
-
+function IntegerNumbersOnly(
+    input: number,
+    next: Middleware<number, number>,
+    options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+) {
     input = Math.floor(input);
 
     // in this example, we make sure that any returned value is also an
@@ -153,6 +172,7 @@ With middleware, our functions aren't _composed_ in the functional sense:
 
 * we don't use the output of one function as the input to the next
 * there's no compiler/interpreter support for this, so we have to emulate the behaviour using a piece of controlling JavaScript / TypeScript that we call the MiddlewareStack
+* while the output of one piece of middleware does become the input of the next piece of middleware, all the middleware in the same MiddlewareStack must have the same function signature.
 
 There **are** some things that our middleware has in common with functional programming:
 
@@ -177,14 +197,33 @@ There's several important differences between Ware and our Middleware module:
 ### AsyncMiddleware
 
 ```typescript
-import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { MiddlewareOptions } from "@ganbarodigital/ts-lib-middleware/v2";
 
 /**
- * type-signature for an individual piece of Middleware
+ * `AsyncMiddleware` is the function-signature for an individual
+ * piece of Middleware.
+ *
+ * @params input
+ * this is the data to be passed into this piece of middleware
+ * @params next
+ * this is the next piece of middleware in the stack
+ * @params options.onError
+ * we call this if a problem occurs
+ * @returns
+ * a Promise that will resolve to the final return value of the stack
+ *
+ * @template I
+ * the type (normally an interface) of data that this piece of middleware
+ * accepts
+ * @template O
+ * the type (normally an interface) of data that this piece of middleware
+ * returns
  */
-export type AsyncMiddleware<I, O>
-    = (input: I, next: AsyncMiddleware<I, O>, onError: OnError) => Promise<O>;
-```
+export type AsyncMiddleware<I, O> = (
+    input: I,
+    next: AsyncMiddleware<I, O>,
+    options?: MiddlewareOptions,
+) => Promise<O>;
 
 `AsyncMiddleware` is a _function signature_. Use this to define the type of function that your `AsyncMiddlewareStack` will accept.
 
@@ -200,32 +239,46 @@ export type PrefetchAction = AsyncMiddleware<URL, void>;
 // how to import into your own code
 import {
     AsyncMiddlewareStack,
-} from "@ganbarodigital/ts-lib-middleware/lib/v1;
+} from "@ganbarodigital/ts-lib-middleware/lib/v2;
 
 // types used for parameters, return types and errors
 import {
     AsyncMiddleware,
-    AsyncMiddlewareReturnedNoValueError
-} from "@ganbarodigital/ts-lib-middleware/lib/v1;
+    MiddlewareOptions,
+    MiddlewareReturnedNoValueError
+} from "@ganbarodigital/ts-lib-middleware/lib/v2;
 import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
 /**
- * a collection of middleware to be executed asynchronously
+ * `AsyncMiddlewareStack` is a collection of middleware to be
+ * executed asynchronously.
  *
- * - <I> is the input type that the middleware must accept
- * - <O> is the return type that the middleware must provide after the
- *       Promise is resolved
+ * @template I
+ * the input type that the middleware must accept
+ * @template O
+ * the return type that the middleware must provide after the Promise
+ * is resolved
  */
 export class AsyncMiddlewareStack<I, O> {
     /**
-     * add one or more pieces of middleware to this AsyncMiddlewareStack
+     * `constructor()` builds a new AsyncMiddlewareStack.
      *
-     * Middleware is executed in the order that you add it to the stack
+     * Use it to add one or more pieces of middleware to this
+     * AsyncMiddlewareStack. The middleware is executed in the order
+     * that you add it to the stack.
+     *
+     * @param name
+     * The human-readable name of this AsyncMiddlewareStack. We use this
+     * in errors thrown by the AsyncMiddlewareStack class.
+     * @param fns
+     * The list of middleware to put in the AsyncMiddlewareStack.
      */
-    public constructor(name: string, ...fns: Array<AsyncMiddleware<I, O>>);
+    public constructor(name: string, ...fns: AsyncMiddleware<I, O>[]);
 
     /**
-     * Execute the middleware that's on the stack, and return the result.
+     * `run()` executes the middleware that's on the stack, and returns
+     * the result.
+     *
      * We execute the middleware in the order that it was added to this
      * stack. (IE first item added is the first item we run).
      *
@@ -235,16 +288,27 @@ export class AsyncMiddlewareStack<I, O> {
      * - throws an error, or
      * - passes the (probably modified) input on to the next piece of
      *   middleware in the stack
+     *
+     * @param input
+     * The value to pass into the first function on your MiddlewareStack.
+     * @param options.onError
+     * We will call this if something goes wrong.
      */
-    public async run(input: I, onError: OnError = THROW_THE_ERROR): Promise<O>;
+    public async run(
+        input: I,
+        {
+            onError = THROW_THE_ERROR,
+        }: Partial<MiddlewareOptions> = {},
+    ): Promise<O>;
 
     /**
-     * what is this AsyncMiddlewareStack called?
+     * `getName()` returns the human-readable name of this
+     * AsyncMiddlewareStack.
      */
     public getName(): string;
 
     /**
-     * what are the contents of the internal stack?
+     * `getStack()` returns the list of middleware items on the stack.
      */
     public getStack(): Array<AsyncMiddleware<I, O>>;
 }
@@ -258,9 +322,30 @@ export class AsyncMiddlewareStack<I, O> {
 import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
 
 /**
- * type-signature for an individual piece of Middleware
+ * `Middleware` is a function signature. It describes a single piece of
+ * Middleware.
+ *
+ * @params input
+ * this is the data to be passed into this piece of middleware
+ * @params next
+ * this is the next piece of middleware in the stack
+ * @params options.onError
+ * we call this if a problem occurs
+ * @returns
+ * the final return value of the stack
+ *
+ * @template I
+ * the type (normally an interface) of data that this piece of middleware
+ * accepts
+ * @template O
+ * the type (normally an interface) of data that this piece of middleware
+ * returns
  */
-export type Middleware<I, O> = (input: I, next: Middleware<I, O>, onError: OnError) => O;
+export type Middleware<I, O> = (
+    input: I,
+    next: Middleware<I, O>,
+    options?: MiddlewareOptions
+) => O;
 ```
 
 `Middleware` is a _function signature_. Use this to define the type of function that your `MiddlewareStack` will accept.
@@ -276,34 +361,45 @@ export type PrefetchAction = Middleware<URL, void>;
 ```typescript
 // how to import into your own code
 import {
-    Middleware,
     MiddlewareStack,
-    MiddlewareReturnedNoValueError
 } from "@ganbarodigital/ts-lib-middleware/lib/v1;
 
 // types used for parameters, return types and errors
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { OnError, THROW_THE_ERROR } from "@safelytyped/core-types";
 import {
     Middleware,
+    MiddlewareOptions,
     MiddlewareReturnedNoValueError
-} from "@ganbarodigital/ts-lib-middleware/lib/v1;
+} from "@ganbarodigital/ts-lib-middleware/lib/v2;
 
 /**
- * a collection of Middleware to be executed
+ * `MiddlewareStack` is a collection of middleware to be executed
+ * synchronously.
  *
- * - <I> is the input type that Middleware must accept
- * - <O> is the return type that Middleware must provide
+ * @template I
+ * the input type that the middleware must accept
+ * @template O
+ * the return type that the middleware must return
  */
 export class MiddlewareStack<I, O> {
     /**
-     * add one or more pieces of middleware to this MiddlewareStack
+     * `constructor()` builds a new MiddlewareStack.
      *
-     * Middleware is executed in the order that you add it to the stack
+     * Use it to add one or more pieces of middleware to this MiddlewareStack.
+     * The middleware is executed in the order that you add it to the stack.
+     *
+     * @param name
+     * The human-readable name of this MiddlewareStack. We use this in
+     * errors thrown by the MiddlewareStack class.
+     * @param fns
+     * The list of middleware to put in the MiddlewareStack.
      */
-    public constructor(name: string, ...fns: Array<Middleware<I, O>>);
+    public constructor(name: string, ...fns: Middleware<I, O>[]);
 
     /**
-     * Execute the middleware that's on the stack, and return the result.
+     * `run()` executes the middleware that's on the stack, and returns
+     * the result.
+     *
      * We execute the middleware in the order that it was added to this
      * stack. (IE first item added is the first item we run).
      *
@@ -313,16 +409,21 @@ export class MiddlewareStack<I, O> {
      * - throws an error, or
      * - passes the (probably modified) input on to the next piece of
      *   middleware in the stack
+     *
+     * @param input
+     * The value to pass into the first function on your MiddlewareStack.
+     * @param options.onError
+     * We will call this if something goes wrong.
      */
-    public run(input: I, onError: OnError = THROW_THE_ERROR): O;
+    public run(input: I, options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS): O;
 
     /**
-     * what is this MiddlewareStack called?
+     * `getName()` returns the human-readable name of this MiddlewareStack.
      */
     public getName(): string;
 
     /**
-     * what are the contents of the stack?
+     * `getStack()` returns the list of middleware.
      */
     public getStack(): Array<Middleware<I, O>>;
 }
@@ -337,21 +438,21 @@ export class MiddlewareStack<I, O> {
 ```typescript
 import {
     AppError,
-    AppErrorParams,
-} from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+    AppErrorData,
+} from "@safelytyped/core-types";
 
-export interface MiddlewareReturnedNoValueExtraData extends ExtraLogsOnlyData {
+export interface MiddlewareReturnedNoValueData extends ExtraLogsOnlyData {
     logsOnly: {
         middlewareName: string;
     };
 }
 
-export class MiddlewareReturnedNoValueError extends AppError {
-    public constructor(params: MiddlewareReturnedNoValueExtraData & AppErrorParams);
+export class MiddlewareReturnedNoValueError extends AppError<MiddlewareReturnedNoValueData> {
+    public constructor(params: MiddlewareReturnedNoValueData & AppErrorData);
 }
 ```
 
-`MiddlewareReturnedNoValueError` is a `throw`able JavaScript `Error`. It is thrown when we've run out of `Middleware` to execute in a `MiddlewareStack`.
+`MiddlewareReturnedNoValueError` is a `throw`able JavaScript `Error`. It is thrown when we've run out of `Middleware` to execute in a `MiddlewareStack` or `AsyncMiddlewareStack`.
 
 The fix? Make sure that the last piece of `Middleware` returns a value.
 
