@@ -21,6 +21,19 @@ For each release, changes are grouped under these headings:
 
 The following changes have been completed, and will be included in the next tagged release.
 
+## v0.2.0
+
+Released Monday, 28th September 2020.
+
+### BACKWARDS-COMPATIBILITY BREAKS
+
+* Switched from `ts-lib-error-reporting` to `@safelytyped/core-types`.
+* Function and method signatures updated to the SafelyTyped coding standards.
+
+## v0.1.0
+
+Released Monday, 19th May, 2020.
+
 ### New
 
 * Middleware

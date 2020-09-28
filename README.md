@@ -247,7 +247,7 @@ import {
     MiddlewareOptions,
     MiddlewareReturnedNoValueError
 } from "@ganbarodigital/ts-lib-middleware/lib/v2;
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { OnError, THROW_THE_ERROR } from "@safelytyped/core-types";
 
 /**
  * `AsyncMiddlewareStack` is a collection of middleware to be
@@ -319,7 +319,7 @@ export class AsyncMiddlewareStack<I, O> {
 ### Middleware
 
 ```typescript
-import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { OnError } from "@safelytyped/core-types";
 
 /**
  * `Middleware` is a function signature. It describes a single piece of
@@ -362,7 +362,7 @@ export type PrefetchAction = Middleware<URL, void>;
 // how to import into your own code
 import {
     MiddlewareStack,
-} from "@ganbarodigital/ts-lib-middleware/lib/v1;
+} from "@ganbarodigital/ts-lib-middleware/lib/v2;
 
 // types used for parameters, return types and errors
 import { OnError, THROW_THE_ERROR } from "@safelytyped/core-types";
