@@ -34,28 +34,28 @@
 import { expect } from "chai";
 import { describe } from "mocha";
 
-import { OnError, THROW_THE_ERROR } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { AsyncMiddleware, AsyncMiddlewareStack } from ".";
+import { MiddlewareStack } from ".";
+import { MiddlewareReturnedNoValueError } from "../Errors";
+import { DEFAULT_MIDDLEWARE_OPTIONS } from "./defaults/DEFAULT_MIDDLEWARE_OPTIONS";
+import { Middleware } from "./Middleware";
+import { MiddlewareOptions } from "./MiddlewareOptions";
 
-describe("AsyncMiddlewareStack", () => {
+describe("MiddlewareStack", () => {
     describe(".constructor()", () => {
-        it("creates an empty stack by default", async () => {
-            const unit = new AsyncMiddlewareStack("unit-test");
+        it("creates an empty stack by default", () => {
+            const unit = new MiddlewareStack("unit-test");
 
             const actualValue = unit.getStack();
 
             // the only thing on the stack is our function that
             // throws an error
             expect(actualValue.length).to.equal(1);
-
-            let caught = false;
-            await unit.run(null).catch((e) => { caught = true; });
-            expect(caught).to.equal(true);
+            expect(() => { unit.run(null); }).to.throw(MiddlewareReturnedNoValueError);
         });
 
-        it("sets the name for this AsyncMiddlewareStack instance", () => {
+        it("sets the name for this MiddlewareStack instance", () => {
             const expectedValue = "unit-test-stack";
-            const unit = new AsyncMiddlewareStack(expectedValue);
+            const unit = new MiddlewareStack(expectedValue);
 
             const actualValue = unit.getName();
 
@@ -64,9 +64,9 @@ describe("AsyncMiddlewareStack", () => {
     });
 
     describe(".getName()", () => {
-        it("returns the name of this AsyncMiddlewareStack instance", () => {
+        it("returns the name of this MiddlewareStack instance", () => {
             const expectedValue = "unit-test-stack";
-            const unit = new AsyncMiddlewareStack(expectedValue);
+            const unit = new MiddlewareStack(expectedValue);
 
             const actualValue = unit.getName();
 
@@ -75,24 +75,24 @@ describe("AsyncMiddlewareStack", () => {
     });
 
     describe(".getStack()", () => {
-        it("returns the list of AsyncMiddleware functions", () => {
-            const m1 = async (
+        it("returns the list of Middleware functions", () => {
+            const m1 = (
                 input: string,
-                next: AsyncMiddleware<string, string>,
-                onError: OnError = THROW_THE_ERROR,
-            ): Promise<string> => {
-                return next("m1 " + input, next, onError);
+                next: Middleware<string, string>,
+                options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+            ): string => {
+                return next("m1 " + input, next, options);
             };
 
-            const m2 = async (
+            const m2 = (
                 input: string,
-                next: AsyncMiddleware<string, string>,
-                onError: OnError = THROW_THE_ERROR,
-            ): Promise<string> => {
+                next: Middleware<string, string>,
+                options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+            ): string => {
                 return "m2 " + input;
             };
 
-            const unit = new AsyncMiddlewareStack("unit-test", m1, m2);
+            const unit = new MiddlewareStack("unit-test", m1, m2);
             const actualValue = unit.getStack();
 
             expect(actualValue[0]).to.eql(m1);
@@ -101,27 +101,27 @@ describe("AsyncMiddlewareStack", () => {
     });
 
     describe(".run()", () => {
-        it("supports executing AsyncMiddleware", async () => {
-            const m1 = async (
+        it("executes the Middleware that's on the stack", () => {
+            const m1 = (
                 input: string,
-                next: AsyncMiddleware<string, string>,
-                onError: OnError = THROW_THE_ERROR,
-            ): Promise<string> => {
-                return await next("m1 " + input, next, onError);
+                next: Middleware<string, string>,
+                options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+            ): string => {
+                return next("m1 " + input, next, options);
             };
 
-            const m2 = async (
+            const m2 = (
                 input: string,
-                next: AsyncMiddleware<string, string>,
-                onError: OnError = THROW_THE_ERROR,
-            ): Promise<string> => {
+                next: Middleware<string, string>,
+                options: MiddlewareOptions = DEFAULT_MIDDLEWARE_OPTIONS
+            ): string => {
                 return "m2 " + input;
             };
 
             const expectedValue = "m2 m1 test the run";
 
-            const unit = new AsyncMiddlewareStack("unit-test", m1, m2);
-            const actualValue = await unit.run("test the run");
+            const unit = new MiddlewareStack("unit-test", m1, m2);
+            const actualValue = unit.run("test the run");
 
             expect(actualValue).to.equal(expectedValue);
         });

@@ -31,10 +31,14 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-
-import { OnError } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
+import { ExtraLogsOnlyData } from "@safelytyped/core-types";
 
 /**
- * type-signature for an individual piece of Middleware
+ * `MiddlewareReturnedNoValueData` is the input that
+ * {@link MiddlewareReturnedNoValueError} requires.
  */
-export type Middleware<I, O> = (input: I, next: Middleware<I, O>, onError: OnError) => O;
+export interface MiddlewareReturnedNoValueData extends ExtraLogsOnlyData {
+    logsOnly: {
+        middlewareName: string;
+    };
+}

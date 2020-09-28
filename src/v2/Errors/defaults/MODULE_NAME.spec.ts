@@ -31,25 +31,13 @@
 // ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-import { ErrorTable, ErrorTableTemplate } from "@ganbarodigital/ts-lib-error-reporting/lib/v1";
-import { httpStatusCodeFrom } from "@ganbarodigital/ts-lib-http-types/lib/v1";
-import { packageNameFrom } from "@ganbarodigital/ts-lib-packagename/lib/v1";
+import { expect } from "chai";
+import { describe } from "mocha";
 
-import { MiddlewareReturnedNoValueTemplate } from "./MiddlewareReturnedNoValue";
+import { MODULE_NAME } from "./MODULE_NAME";
 
-const MODULE_NAME = packageNameFrom("@ganbarodigital/ts-lib-middleware/lib/v1");
-
-type ModuleErrorTableIndex<T extends ErrorTable> = ErrorTableTemplate<T, string>;
-
-export class ModuleErrorTable implements ErrorTable {
-    [key: string]: ModuleErrorTableIndex<ModuleErrorTable>;
-
-    public "middleware-returned-no-value": MiddlewareReturnedNoValueTemplate = {
-        packageName: MODULE_NAME,
-        errorName: "middleware-returned-no-value",
-        status: httpStatusCodeFrom(500),
-        detail: "a MiddlewareStack failed to return a value",
-    };
-}
-
-export const ERROR_TABLE = new ModuleErrorTable();
+describe("MODULE_NAME", () => {
+    it("has the value '@ganbarodigital/ts-lib-middleware/v2'", () => {
+         expect(MODULE_NAME).to.equal("@ganbarodigital/ts-lib-middleware/v2");
+    });
+});

@@ -32,7 +32,30 @@
 // POSSIBILITY OF SUCH DAMAGE.
 //
 
-export * from "./AsyncMiddleware";
-export * from "./AsyncMiddlewareStack";
-export * from "./Middleware";
-export * from "./MiddlewareStack";
+import { MiddlewareOptions } from "./MiddlewareOptions";
+
+/**
+ * `AsyncMiddleware` is the function-signature for an individual
+ * piece of Middleware.
+ *
+ * @params input
+ * this is the data to be passed into this piece of middleware
+ * @params next
+ * this is the next piece of middleware in the stack
+ * @params options.onError
+ * we call this if a problem occurs
+ * @returns
+ * a Promise that will resolve to the final return value of the stack
+ *
+ * @template I
+ * the type (normally an interface) of data that this piece of middleware
+ * accepts
+ * @template O
+ * the type (normally an interface) of data that this piece of middleware
+ * returns
+ */
+export type AsyncMiddleware<I, O> = (
+    input: I,
+    next: AsyncMiddleware<I, O>,
+    options: MiddlewareOptions,
+) => Promise<O>;
